@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProcCmdLine", "ProcCmdLine.vcxproj", "{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugProcCmdLineNetFramework", "DebugProcCmdLineNetFramework\DebugProcCmdLineNetFramework.csproj", "{F4DC48B4-047F-400D-B80D-49AB89529EDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}.Debug|x64.ActiveCfg = Debug|x64
+		{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}.Debug|x64.Build.0 = Debug|x64
+		{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}.Debug|x86.ActiveCfg = Debug|Win32
+		{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}.Debug|x86.Build.0 = Debug|Win32
+		{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}.Release|x64.ActiveCfg = Release|x64
+		{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}.Release|x64.Build.0 = Release|x64
+		{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}.Release|x86.ActiveCfg = Release|Win32
+		{74F1EBBA-5CDA-4654-8D29-4E145B3FE5B6}.Release|x86.Build.0 = Release|Win32
+		{F4DC48B4-047F-400D-B80D-49AB89529EDF}.Debug|x64.ActiveCfg = Debug|x64
+		{F4DC48B4-047F-400D-B80D-49AB89529EDF}.Debug|x64.Build.0 = Debug|x64
+		{F4DC48B4-047F-400D-B80D-49AB89529EDF}.Debug|x86.ActiveCfg = Debug|x86
+		{F4DC48B4-047F-400D-B80D-49AB89529EDF}.Release|x64.ActiveCfg = Release|x64
+		{F4DC48B4-047F-400D-B80D-49AB89529EDF}.Release|x64.Build.0 = Release|x64
+		{F4DC48B4-047F-400D-B80D-49AB89529EDF}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {65E5367A-FA8A-49BF-ADFE-61769CC7E764}
+	EndGlobalSection
+EndGlobal
