@@ -1,0 +1,4 @@
+LIBRARY ProcCmdLine32
+EXPORTS
+	GetProcCmdLineA
+	GetProcCmdLineW
