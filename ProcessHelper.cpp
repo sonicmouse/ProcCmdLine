@@ -2,15 +2,15 @@
 
 PPEB CProcessHelper::GetPebAddress(HANDLE hProcess){
 
-	auto hModNTDLL = GetModuleHandleW(L"ntdll.dll");
+	static auto hModNTDLL = GetModuleHandleW(L"ntdll.dll");
 	if (hModNTDLL) {
-		auto pNtQueryInformationProcess =
+		static auto pNtQueryInformationProcess =
 			reinterpret_cast<_NtQueryInformationProcess>(
 				GetProcAddress(hModNTDLL, "NtQueryInformationProcess"));
 		if (pNtQueryInformationProcess) {
 			PROCESS_BASIC_INFORMATION pbi = { 0 };
 			if (pNtQueryInformationProcess(hProcess, 0, &pbi, sizeof(pbi), nullptr) == 0) {
-				return reinterpret_cast<PPEB>(pbi.PebBaseAddress);
+				return pbi.PebBaseAddress;
 			}
 		}
 	}
