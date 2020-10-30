@@ -1,24 +1,25 @@
-#ifndef __PROCESS_HELPER_H__
-#define __PROCESS_HELPER_H__
 #pragma once
 
 #include <windows.h>
 #include <winternl.h>
 
-class CProcessHelper
+namespace ProcessHelper
 {
-public:
-	static int GetProcessCommandLine(DWORD dwProcId, LPWSTR& szCmdLine);
-
-private:
-	static PPEB GetPebAddress(HANDLE hProcess);
-
-	typedef NTSTATUS (NTAPI* _NtQueryInformationProcess)(
-					  HANDLE ProcessHandle,
-					  DWORD ProcessInformationClass,
-					  PVOID ProcessInformation,
-					  DWORD ProcessInformationLength,
-					  PDWORD ReturnLength);
+enum class ProcessParameter
+{
+	CommandLine,
+	WorkingDirectory,
 };
 
-#endif /** !__PROCESS_HELPER_H__ **/
+int GetProcessParameter(DWORD dwProcId, LPWSTR& szCmdLine, ProcessParameter parameter);
+
+PPEB GetPebAddress(HANDLE hProcess);
+
+typedef NTSTATUS(NTAPI* _NtQueryInformationProcess)(
+	HANDLE ProcessHandle,
+	DWORD ProcessInformationClass,
+	PVOID ProcessInformation,
+	DWORD ProcessInformationLength,
+	PDWORD ReturnLength);
+
+} // namespace ProcessHelper
