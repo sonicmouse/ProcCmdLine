@@ -20,6 +20,8 @@ namespace DebugProcCmdLineNetFramework
 
 				try
 				{
+					var workingDir = ProcCmdLine.GetWorkingDirectoryOfProcess(p);
+                    Console.WriteLine("\tdir: " + workingDir);
 					var cmdLineArray = ProcCmdLine.GetCommandLineArrayOfProcess(p);
 					cmdLineArray.Select((x, i) => $"\targ {i}: {x}").ToList().ForEach(Console.WriteLine);
 				}
