@@ -28,6 +28,12 @@ public static class ProcCmdLine
 		[DllImport("ProcCmdLine64.dll", CharSet = CharSet.Unicode, EntryPoint = "GetProcCmdLineW")]
 		public extern static int GetProcCmdLine64W(uint nProcId, StringBuilder sb, uint dwSizeBuf);
 
+		[DllImport("ProcCmdLine32.dll", CharSet = CharSet.Unicode, EntryPoint = "GetProcWorkingDirW")]
+		public extern static int GetProcWorkingDir32W(uint nProcId, StringBuilder sb, uint dwSizeBuf);
+
+		[DllImport("ProcCmdLine64.dll", CharSet = CharSet.Unicode, EntryPoint = "GetProcWorkingDirW")]
+		public extern static int GetProcWorkingDir64W(uint nProcId, StringBuilder sb, uint dwSizeBuf);
+
 		/* ANSI compatible exports, you shouldn't need these, but they are here if you do.
 		[DllImport("ProcCmdLine32.dll", CharSet = CharSet.Ansi, EntryPoint = "GetProcCmdLineA",
 			ThrowOnUnmappableChar = true, BestFitMapping = false)]
@@ -49,7 +55,7 @@ public static class ProcCmdLine
 			"Failed to read process memory",
 			"Failed to read UNICODE_STRING",
 			"Failed to allocate memory",
-			"Failed to read command line"
+			"Failed to read parameter string"
 		}[Math.Abs(error)];
 	}
 
@@ -78,7 +84,7 @@ public static class ProcCmdLine
 		}
 	}
 
-	public static string GetCommandLineOfProcessW(Process proc)
+	public static string GetCommandLineOfProcess(Process proc)
 	{
 		var sb = new StringBuilder(capacity: 0xFFFF);
 		var rc = -1;
@@ -94,9 +100,25 @@ public static class ProcCmdLine
 		return (0 == rc) ? sb.ToString() : throw new Win32Exception(rc, ErrorToString(rc));
 	}
 
+	public static string GetWorkingDirectoryOfProcess(Process proc)
+	{
+		var sb = new StringBuilder(capacity: 0xFFFF);
+		var rc = -1;
+		switch (IntPtr.Size)
+		{
+			case 4:
+				rc = Win32Native.GetProcWorkingDir32W((uint)proc.Id, sb, (uint)sb.Capacity);
+				break;
+			case 8:
+				rc = Win32Native.GetProcWorkingDir64W((uint)proc.Id, sb, (uint)sb.Capacity);
+				break;
+		}
+		return (0 == rc) ? sb.ToString() : throw new Win32Exception(rc, ErrorToString(rc));
+	}
+
 	public static IReadOnlyList<string> GetCommandLineArrayOfProcess(Process proc)
 	{
-		return CommandLineToArgs(GetCommandLineOfProcessW(proc));
+		return CommandLineToArgs(GetCommandLineOfProcess(proc));
 	}
 
 	private static string RebuildCommandLineFromArray(string[] arrArgs)

@@ -2,3 +2,5 @@ LIBRARY ProcCmdLine64
 EXPORTS
 	GetProcCmdLineA
 	GetProcCmdLineW
+	GetProcWorkingDirA
+	GetProcWorkingDirW
