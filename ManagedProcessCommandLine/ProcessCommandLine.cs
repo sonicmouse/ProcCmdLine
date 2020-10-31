@@ -52,10 +52,18 @@ public static class ProcessCommandLine
 		[StructLayout(LayoutKind.Sequential)]
 		public struct RtlUserProcessParameters
 		{
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-			public byte[] Reserved1;
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
-			public IntPtr[] Reserved2;
+			public uint MaximumLength;
+			public uint Length;
+			public uint Flags;
+			public uint DebugFlags;
+			public IntPtr ConsoleHandle;
+			public uint ConsoleFlags;
+			public IntPtr StandardInput;
+			public IntPtr StandardOutput;
+			public IntPtr StandardError;
+			public UnicodeString CurrentDirectory;
+			public IntPtr CurrentDirectoryHandle;
+			public UnicodeString DllPath;
 			public UnicodeString ImagePathName;
 			public UnicodeString CommandLine;
 		}
@@ -121,13 +129,19 @@ public static class ProcessCommandLine
 			"PEB address was null",
 			"Failed to read PEB information",
 			"Failed to read process parameters",
-			"Failed to read command line from process"
+			"Failed to read parameter from process"
 		}[Math.Abs(error)];
 
-	public static int Retrieve(Process process, out string commandLine)
+	public enum Parameter
+	{
+		CommandLine,
+		WorkingDirectory,
+	}
+
+	public static int Retrieve(Process process, out string parameterValue, Parameter parameter = Parameter.CommandLine)
 	{
 		int rc = 0;
-		commandLine = null;
+		parameterValue = null;
 		var hProcess = Win32Native.OpenProcess(
 			Win32Native.OpenProcessDesiredAccessFlags.PROCESS_QUERY_INFORMATION |
 			Win32Native.OpenProcessDesiredAccessFlags.PROCESS_VM_READ, false, (uint)process.Id);
@@ -153,25 +167,39 @@ public static class ProcessCommandLine
 								if (ReadStructFromProcessMemory<Win32Native.RtlUserProcessParameters>(
 									hProcess, pebInfo.ProcessParameters, out var ruppInfo))
 								{
-									var clLen = ruppInfo.CommandLine.MaximumLength;
-									var memCL = Marshal.AllocHGlobal(clLen);
-									try
+									string ReadUnicodeString(Win32Native.UnicodeString unicodeString)
 									{
-										if (Win32Native.ReadProcessMemory(hProcess,
-											ruppInfo.CommandLine.Buffer, memCL, clLen, out len))
+										var clLen = unicodeString.MaximumLength;
+										var memCL = Marshal.AllocHGlobal(clLen);
+										try
 										{
-											commandLine = Marshal.PtrToStringUni(memCL);
-											rc = 0;
+											if (Win32Native.ReadProcessMemory(hProcess,
+												unicodeString.Buffer, memCL, clLen, out len))
+											{
+												rc = 0;
+												return Marshal.PtrToStringUni(memCL);
+											}
+											else
+											{
+												// couldn't read parameter line buffer
+												rc = -6;
+											}
 										}
-										else
+										finally
 										{
-											// couldn't read command line buffer
-											rc = -6;
+											Marshal.FreeHGlobal(memCL);
 										}
+										return null;
 									}
-									finally
+
+									switch (parameter)
 									{
-										Marshal.FreeHGlobal(memCL);
+										case Parameter.CommandLine:
+											parameterValue = ReadUnicodeString(ruppInfo.CommandLine);
+											break;
+										case Parameter.WorkingDirectory:
+											parameterValue = ReadUnicodeString(ruppInfo.CurrentDirectory);
+											break;
 									}
 								}
 								else

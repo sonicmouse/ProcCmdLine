@@ -3,17 +3,19 @@
 #include <stdlib.h> // for wcstombs_s()
 #include "ProcessHelper.h"
 
-BOOL WINAPI DllMain(HINSTANCE hInstDLL, DWORD fdwReason, LPVOID lpvReserved){
-	if (fdwReason == DLL_PROCESS_ATTACH){
+using namespace ProcessHelper;
+
+BOOL WINAPI DllMain(HINSTANCE hInstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+	if (fdwReason == DLL_PROCESS_ATTACH) {
 		DisableThreadLibraryCalls(hInstDLL);
 	}
 	return TRUE;
 }
 
-int __stdcall GetProcCmdLineA(DWORD dwProcId, PCHAR buf, DWORD dwSizeBuf) {
+int GetProcessParameterA(DWORD dwProcId, PCHAR buf, DWORD dwSizeBuf, ProcessParameter parameter) {
 
 	LPWSTR psz = nullptr;
-	const auto rc = CProcessHelper::GetProcessCommandLine(dwProcId, psz);
+	const auto rc = GetProcessParameter(dwProcId, psz, parameter);
 
 	if ((0 == rc) && psz) {
 		size_t conv;
@@ -25,16 +27,32 @@ int __stdcall GetProcCmdLineA(DWORD dwProcId, PCHAR buf, DWORD dwSizeBuf) {
 	return rc;
 }
 
-int __stdcall GetProcCmdLineW(DWORD dwProcId, PWCHAR buf, DWORD dwSizeBuf){
+static int GetProcessParameterW(DWORD dwProcId, PWCHAR buf, DWORD dwSizeBuf, ProcessParameter parameter) {
 
 	LPWSTR psz = nullptr;
-	const auto rc = CProcessHelper::GetProcessCommandLine(dwProcId, psz);
+	const auto rc = GetProcessParameter(dwProcId, psz, parameter);
 
 	if ((0 == rc) && psz) {
 		wcscpy_s(buf, dwSizeBuf, psz);
 	}
 
-	if(psz){ delete[] psz; }
+	if (psz) { delete[] psz; }
 
 	return rc;
+}
+
+int __stdcall GetProcCmdLineA(DWORD dwProcId, PCHAR buf, DWORD dwSizeBuf) {
+	return GetProcessParameterA(dwProcId, buf, dwSizeBuf, ProcessParameter::CommandLine);
+}
+
+int __stdcall GetProcCmdLineW(DWORD dwProcId, PWCHAR buf, DWORD dwSizeBuf) {
+	return GetProcessParameterW(dwProcId, buf, dwSizeBuf, ProcessParameter::CommandLine);
+}
+
+int __stdcall GetProcWorkingDirA(DWORD dwProcId, PCHAR buf, DWORD dwSizeBuf) {
+	return GetProcessParameterA(dwProcId, buf, dwSizeBuf, ProcessParameter::WorkingDirectory);
+}
+
+int __stdcall GetProcWorkingDirW(DWORD dwProcId, PWCHAR buf, DWORD dwSizeBuf) {
+	return GetProcessParameterW(dwProcId, buf, dwSizeBuf, ProcessParameter::WorkingDirectory);
 }

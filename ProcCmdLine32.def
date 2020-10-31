@@ -2,3 +2,5 @@ LIBRARY ProcCmdLine32
 EXPORTS
 	GetProcCmdLineA
 	GetProcCmdLineW
+	GetProcWorkingDirA
+	GetProcWorkingDirW
